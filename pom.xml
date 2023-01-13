@@ -1,0 +1,966 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.jotech</groupId>
+    <artifactId>classicmodels</artifactId>
+    <version>1.0.0</version>
+
+    <name>starter-template</name>
+    <packaging>war</packaging>
+
+    <properties>
+        <!-- Global Maven settings -->
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!--Glassfish v6.1+, Java 11 is supported -->
+        <maven.compiler.release>11</maven.compiler.release>
+
+        <!-- The default value is changed to `false` since maven-war-plugin 3.0.0 -->
+        <failOnMissingWebXml>false</failOnMissingWebXml>
+
+        <!-- Official Maven Plugins -->
+        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+        <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
+        <maven-dependency-plugin.version>3.3.0</maven-dependency-plugin.version>
+        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.0.0-M7</maven-failsafe-plugin.version>
+        <maven-surefire-report-plugin.version>3.0.0-M7</maven-surefire-report-plugin.version>
+
+        <!-- Cargo maven plugin to deploy apps to Glassfish/Payara servers -->
+        <cargo-maven3-plugin.version>1.10.3</cargo-maven3-plugin.version>
+
+        <!-- Jakarta EE API 9.1.0 adds Java 11 support-->
+        <jakartaee-api.version>9.1.0</jakartaee-api.version>
+
+
+        <!-- Arquillian 1.7.0 adds Jakarta EE 9 and JUnit 5 support-->
+        <arquillian-bom.version>1.7.0.Alpha13</arquillian-bom.version>
+        <junit-jupiter.version>5.9.1</junit-jupiter.version>
+
+        <!-- Test Utilities -->
+        <mockito.version>4.8.0</mockito.version>
+        <json-path.version>2.7.0</json-path.version>
+        <awaitility.version>4.2.0</awaitility.version>
+        <hamcrest.version>2.2</hamcrest.version>
+        <jsonassert.version>1.5.1</jsonassert.version>
+        <assertj.version>3.23.1</assertj.version>
+
+        <!-- Jacoco code coverage report -->
+        <jacoco-maven-plugin.version>0.8.4</jacoco-maven-plugin.version>
+
+
+        <!-- Wildfly server -->
+        <wildfly.version>27.0.0.Final</wildfly.version>
+        <wildfly-maven-plugin.version>3.0.2.Final</wildfly-maven-plugin.version>
+        <wildfly-arquillian.version>5.0.0.Alpha6</wildfly-arquillian.version>
+        <wildfly-jar-maven-plugin.version>8.0.0.Final</wildfly-jar-maven-plugin.version>
+
+        <!-- websockets-jsr and resteasy for client, aligned with Wildfly version. -->
+        <undertow-websockets-jsr.version>2.2.17.Final</undertow-websockets-jsr.version>
+        <resteasy.version>6.0.1.Final</resteasy.version>
+
+        <!-- By default, skip tests -->
+        <skip.unit.tests>true</skip.unit.tests>
+        <skip.integration.tests>true</skip.integration.tests>
+
+        <!-- Enforce Java Minimum version -->
+        <java.min.version>11</java.min.version>
+
+        <!-- Enforce Maven Minimum version -->
+        <maven.min.version>3.0.0</maven.min.version>
+
+        <!--    CheckStyle   -->
+        <maven.checkstyle.plugin.version>3.1.1</maven.checkstyle.plugin.version>
+
+        <maven.project.info.reports.plugin.version>3.1.0</maven.project.info.reports.plugin.version>
+
+        <maven.jxr.plugin.version>3.0.0</maven.jxr.plugin.version>
+        <maven.pmd.plugin.version>3.13.0</maven.pmd.plugin.version>
+        <maven.versions.plugin.version>2.7</maven.versions.plugin.version>
+        <maven.taglist.plugin.version>2.4</maven.taglist.plugin.version>
+        <maven.doxia.module.markdown.version>1.9.1</maven.doxia.module.markdown.version>
+        <maven.site.plugin.version>3.9.0</maven.site.plugin.version>
+
+        <wildfly.server.hostname>localhost</wildfly.server.hostname>
+        <wildfly.server.management.port>9990</wildfly.server.management.port>
+        <wildfly.server.user.username>oenga</wildfly.server.user.username>
+        <wildfly.server.user.password>Franjescal 1997</wildfly.server.user.password>
+        <wildfly.maven.plugin.version>2.0.1.Final</wildfly.maven.plugin.version>
+
+        <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
+
+
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-api</artifactId>
+                <version>${jakartaee-api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <!--Shrinkwrap resolvers import must be before arquillian bom!-->
+            <dependency>
+                <groupId>org.jboss.shrinkwrap.resolver</groupId>
+                <artifactId>shrinkwrap-resolver-bom</artifactId>
+                <version>3.1.4</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>${arquillian-bom.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit-jupiter.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest -->
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest</artifactId>
+                <version>${hamcrest.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.skyscreamer</groupId>
+                <artifactId>jsonassert</artifactId>
+                <version>${jsonassert.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.awaitility/awaitility -->
+            <dependency>
+                <groupId>org.awaitility</groupId>
+                <artifactId>awaitility</artifactId>
+                <version>${awaitility.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- JSON path -->
+            <!-- https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path -->
+            <dependency>
+                <groupId>com.jayway.jsonpath</groupId>
+                <artifactId>json-path</artifactId>
+                <version>${json-path.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path-assert -->
+            <dependency>
+                <groupId>com.jayway.jsonpath</groupId>
+                <artifactId>json-path-assert</artifactId>
+                <version>${json-path.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Mockito -->
+            <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- =============================START of PROJECT DEPENDENCIES===================== -->
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>6.1.6.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>8.0.0.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+        </dependency>
+        <dependency>
+            <groupId>com.udojava</groupId>
+            <artifactId>EvalEx</artifactId>
+            <version>2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.30</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-jpamodelgen</artifactId>
+            <version>6.1.6.Final</version>
+        </dependency>
+
+        <!-- Runtime, com.sun.xml.bind module -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.14.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.14.0</version>
+        </dependency>
+
+
+        <!-- =============================END of PROJECT DEPENDENCIES===================== -->
+        <!-- ============================================================================-->
+        <!-- =============================START of TEST DEPENDENCIES===================== -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>5.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>5.3.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.junit5</groupId>
+            <artifactId>arquillian-junit5-container</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- see: https://github.com/arquillian/arquillian-core/issues/248 -->
+        <!-- and https://github.com/arquillian/arquillian-core/pull/246/files -->
+        <dependency>
+            <groupId>org.jboss.arquillian.protocol</groupId>
+            <artifactId>arquillian-protocol-servlet-jakarta</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.shrinkwrap.resolver</groupId>
+            <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+            <version>3.1.4</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- shrinkWrap resolvers -->
+        <dependency>
+            <groupId>org.jboss.shrinkwrap.resolver</groupId>
+            <artifactId>shrinkwrap-resolver-depchain</artifactId>
+            <scope>test</scope>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-persistence-dbunit</artifactId>
+            <version>1.0.0.Alpha7</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-performance-impl</artifactId>
+            <version>1.0.0.CR1</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- =============================END of TEST DEPENDENCIES==========================       -->
+        <!--     DATABASES   -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.1.214</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--    MODULE DEPENDENCIES-->
+
+    </dependencies>
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.cargo</groupId>
+                    <artifactId>cargo-maven3-plugin</artifactId>
+                    <version>${cargo-maven3-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven.clean.plugin.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.0.0</version>
+                    <configuration>
+                        <rules>
+                            <requireMavenVersion>
+                                <message>At least Maven in version
+                                    ${maven.min.version} is
+                                    required.
+                                </message>
+                                <version>${maven.min.version}</version>
+                            </requireMavenVersion>
+                            <requireJavaVersion>
+                                <message>At least a JDK in version
+                                    ${java.min.version} is
+                                    required.
+                                </message>
+                                <version>${java.min.version}</version>
+                            </requireJavaVersion>
+                        </rules>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!--WildFly plugin to deploy the application -->
+                <plugin>
+                    <groupId>org.wildfly.plugins</groupId>
+                    <artifactId>wildfly-maven-plugin</artifactId>
+                    <version>${wildfly.maven.plugin.version}</version>
+                    <configuration>
+                        <filename>${project.build.finalName}.war</filename>
+                        <hostname>${wildfly.server.hostname}</hostname>
+                        <port>${wildfly.server.management.port}</port>
+                        <username>${wildfly.server.user.username}</username>
+                        <password>${wildfly.server.user.password}</password>
+                    </configuration>
+                </plugin>
+                <!--Reporting-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>${maven.site.plugin.version}</version>
+                    <executions>
+                        <!-- used for multi-project builds -->
+                        <execution>
+                            <id>attach-descriptor</id>
+                            <goals>
+                                <goal>attach-descriptor</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <locales>en</locales>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.maven.doxia</groupId>
+                            <artifactId>doxia-module-markdown</artifactId>
+                            <version>${maven.doxia.module.markdown.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${maven-war-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+                <configuration>
+                    <skipTests>${skip.unit.tests}</skipTests>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/it/**</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${maven-failsafe-plugin.version}</version>
+                <configuration>
+                    <skipITs>${skip.integration.tests}</skipITs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/it/**</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>unit-test</id>
+            <properties>
+                <skip.unit.tests>false</skip.unit.tests>
+                <skip.integration.tests>true</skip.integration.tests>
+            </properties>
+        </profile>
+        <profile>
+            <id>coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco-maven-plugin.version}</version>
+                        <configuration>
+                            <excludes>
+                                <!-- excludes the resources not to calculated in coverage report-->
+                                <exclude>**/*Resource.*</exclude>
+                            </excludes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>default-prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>default-report</id>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>default-check</id>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <rule>
+                                            <element>BUNDLE</element>
+                                            <limits>
+                                                <limit>
+                                                    <counter>COMPLEXITY</counter>
+                                                    <value>COVEREDRATIO</value>
+                                                    <minimum>0.60</minimum>
+                                                </limit>
+                                            </limits>
+                                        </rule>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>wildfly-bootable</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-jar-maven-plugin</artifactId>
+                        <version>${wildfly-jar-maven-plugin.version}</version>
+                        <configuration>
+                            <feature-pack-location>
+                                wildfly-preview@maven(org.jboss.universe:community-universe)#${wildfly.version}
+                            </feature-pack-location>
+                            <layers>
+                                <layer>jaxrs</layer>
+                            </layers>
+                            <plugin-options>
+                                <jboss-fork-embedded>true</jboss-fork-embedded>
+                            </plugin-options>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>package</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+
+
+            <!-- An optional Arquillian testing profile that executes tests in your
+                WildFly instance -->
+            <!-- This profile will start a new WildFly instance, and execute the test,
+                shutting it down when done -->
+            <!-- Run with: mvn clean verify -Parq-wildfly-managed -->
+            <id>arq-wildfly-managed</id>
+            <properties>
+                <skip.unit.tests>true</skip.unit.tests>
+                <skip.integration.tests>false</skip.integration.tests>
+                <serverProfile>standalone-full.xml</serverProfile>
+                <serverRoot>${project.build.directory}/wildfly-${wildfly.version}</serverRoot>
+                <datasource>
+                    java:jboss/datasources/ExampleDS
+                </datasource>
+                <hibernate.provider>
+                    org.hibernate.jpa.HibernatePersistenceProvider
+                </hibernate.provider>
+            </properties>
+            <dependencies>
+
+                <!-- TESTS -->
+                <!-- JAXRS test need the dependency:resteasy-client -->
+                <!-- Import the RestEasy Client and jackson2/json-binding/json-p provider, we use test scope
+                    as we need that for test purposes -->
+                <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-client</artifactId>
+                    <version>${resteasy.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-jackson2-provider</artifactId>
+                    <version>${resteasy.version}</version>
+                    <scope>test</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.wildfly.arquillian</groupId>
+                    <artifactId>wildfly-arquillian-container-managed</artifactId>
+                    <version>${wildfly-arquillian.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <testResources>
+                    <testResource>
+                        <directory>src/test/resources</directory>
+                        <includes>
+                            <include>*</include>
+                        </includes>
+                    </testResource>
+                </testResources>
+
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.wildfly</groupId>
+                                            <artifactId>wildfly-preview-dist</artifactId>
+                                            <version>${wildfly.version}</version>
+                                            <type>zip</type>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${project.build.directory}</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven-failsafe-plugin.version}</version>
+                        <configuration>
+                            <environmentVariables>
+                                <JBOSS_HOME>${project.build.directory}/wildfly-preview-${wildfly.version}</JBOSS_HOME>
+                            </environmentVariables>
+                            <systemPropertyVariables>
+                                <arquillian.launch>wildfly-managed</arquillian.launch>
+                                <serverConfig>standalone-full.xml</serverConfig>
+                                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!-- An optional Arquillian testing profile that executes tests in a remote
+                WildFly instance -->
+            <!-- Run with: mvn clean test -Parq-wildfly-remote -->
+            <id>arq-wildfly-remote</id>
+            <properties>
+                <skip.unit.tests>true</skip.unit.tests>
+                <skip.integration.tests>false</skip.integration.tests>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-client</artifactId>
+                    <version>${resteasy.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-jackson2-provider</artifactId>
+                    <version>${resteasy.version}</version>
+                    <scope>test</scope>
+                </dependency>
+
+
+                <dependency>
+                    <groupId>org.wildfly.arquillian</groupId>
+                    <artifactId>wildfly-arquillian-container-remote</artifactId>
+                    <version>${wildfly-arquillian.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <!-- To fix 5.0.0.Alpha2 issue: https://github.com/wildfly/wildfly-arquillian/discussions/201#discussioncomment-1849214-->
+                <dependency>
+                    <groupId>org.jboss.remoting</groupId>
+                    <artifactId>jboss-remoting</artifactId>
+                    <version>5.0.26.Final</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.remotingjmx</groupId>
+                    <artifactId>remoting-jmx</artifactId>
+                    <version>3.0.4.Final</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <testResources>
+                    <testResource>
+                        <directory>src/test/resources</directory>
+                        <includes>
+                            <include>*</include>
+                        </includes>
+                    </testResource>
+                </testResources>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven-failsafe-plugin.version}</version>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <arquillian.launch>wildfly-remote</arquillian.launch>
+                                <!-- <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager> -->
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!-- An optional Arquillian testing profile that executes tests in your
+                WildFly instance -->
+            <!-- Run with: mvn clean test -Parq-wildfly-embedded -->
+            <id>arq-wildfly-embedded</id>
+            <properties>
+                <skip.unit.tests>true</skip.unit.tests>
+                <skip.integration.tests>false</skip.integration.tests>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-client</artifactId>
+                    <version>${resteasy.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-jackson2-provider</artifactId>
+                    <version>${resteasy.version}</version>
+                    <scope>test</scope>
+                </dependency>
+
+
+                <dependency>
+                    <groupId>org.wildfly.arquillian</groupId>
+                    <artifactId>wildfly-arquillian-container-embedded</artifactId>
+                    <version>${wildfly-arquillian.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <testResources>
+                    <testResource>
+                        <directory>src/test/resources</directory>
+                        <includes>
+                            <include>*</include>
+                        </includes>
+                    </testResource>
+                </testResources>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>${maven-dependency-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>unpack</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.wildfly</groupId>
+                                            <artifactId>wildfly-preview-dist</artifactId>
+                                            <version>${wildfly.version}</version>
+                                            <type>zip</type>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${project.build.directory}</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven-failsafe-plugin.version}</version>
+                        <configuration>
+                            <environmentVariables>
+                                <JBOSS_HOME>${project.build.directory}/wildfly-preview-${wildfly.version}</JBOSS_HOME>
+                            </environmentVariables>
+                            <systemPropertyVariables>
+                                <arquillian.launch>wildfly-embedded</arquillian.launch>
+                                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!-- An optional Arquillian testing profile that executes tests on a bootable FAT jar -->
+            <!-- Run with: mvn clean test -Parq-wildfly-bootable-jar -->
+            <id>arq-wildfly-bootable-jar</id>
+            <properties>
+                <skip.unit.tests>true</skip.unit.tests>
+                <skip.integration.tests>false</skip.integration.tests>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-client</artifactId>
+                    <version>${resteasy.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-jackson2-provider</artifactId>
+                    <version>${resteasy.version}</version>
+                    <scope>test</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.wildfly.arquillian</groupId>
+                    <artifactId>wildfly-arquillian-container-bootable</artifactId>
+                    <version>${wildfly-arquillian.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <testResources>
+                    <testResource>
+                        <directory>src/test/resources</directory>
+                        <includes>
+                            <include>*</include>
+                        </includes>
+                    </testResource>
+                </testResources>
+                <plugins>
+                    <plugin>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-jar-maven-plugin</artifactId>
+                        <version>${wildfly-jar-maven-plugin.version}</version>
+                        <configuration>
+                            <feature-pack-location>
+                                wildfly-preview@maven(org.jboss.universe:community-universe)#${wildfly.version}
+                            </feature-pack-location>
+                            <layers>
+                                <layer>jaxrs</layer>
+                                <layer>management</layer>
+                            </layers>
+                            <excluded-layers>
+                                <layer>deployment-scanner</layer>
+                            </excluded-layers>
+                            <plugin-options>
+                                <jboss-fork-embedded>true</jboss-fork-embedded>
+                            </plugin-options>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>package</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven-failsafe-plugin.version}</version>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <bootable.jar>${project.build.directory}/${project.artifactId}-bootable.jar
+                                </bootable.jar>
+                                <arquillian.launch>wildfly-bootable-jar</arquillian.launch>
+                                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>${maven-surefire-report-plugin.version}</version>
+                <configuration>
+                    <aggregate>true</aggregate>
+                    <linkXRef>true</linkXRef>
+                    <outputDirectory>${project.reporting.outputDirectory}/testresults
+                    </outputDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven.checkstyle.plugin.version}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>${maven.project.info.reports.plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>${maven.jxr.plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>${maven.pmd.plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>${maven.versions.plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>taglist-maven-plugin</artifactId>
+                <version>${maven.taglist.plugin.version}</version>
+                <configuration>
+                    <aggregate>true</aggregate>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <issueManagement>
+        <system>Github Issues</system>
+        <url>https://github.com/oengajohn/order-management-system/issues</url>
+    </issueManagement>
+    <ciManagement>
+        <system>Github Actions</system>
+        <url>https://github.com/oengajohn/order-management-system/actions/</url>
+    </ciManagement>
+    <scm>
+        <url>https://github.com/oengajohn/order-management-system/actions</url>
+        <connection>scm:git:https://github.com/oengajohn/order-management-system/actions</connection>
+        <developerConnection>scm:git:https://github.com/oengajohn/order-management-system/actions</developerConnection>
+    </scm>
+</project>
