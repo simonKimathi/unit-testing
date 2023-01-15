@@ -40,9 +40,9 @@ pipeline {
         stage('Deploy to wildfly Server') {
             steps {
                 echo('Adapter to deploy to test server')
-                sshagent(['centos3-in-the-office']) {
-                    sh 'scp -o StrictHostKeyChecking=no target/*.war  centos3@192.168.100.210:/home/centos3'
-                }
+                // sshagent(['centos3-in-the-office']) {
+                //     sh 'scp -o StrictHostKeyChecking=no target/*.war  centos3@192.168.100.210:/home/centos3'
+                // }
                 // sshagent(['ubuntu-git-server']) {
                 //     sh 'scp -o StrictHostKeyChecking=no  target/*.war ubuntu@ec2-3-126-66-68.eu-central-1.compute.amazonaws.com:/home/ubuntu'
                 // }
