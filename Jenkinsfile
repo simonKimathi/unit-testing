@@ -40,6 +40,10 @@ pipeline {
         stage('Deploy to wildfly Server') {
             steps {
                 echo('Adapter to deploy to test server')
+                sshagent(['ubuntu-git-server']) {
+                    sh 'scp target/*.war -o StrictHostKeyChecking=no ubuntu@ec2-3-126-66-68.eu-central-1.compute.amazonaws.com:/home/ubuntu'
+                }
+
             // deploy adapters: [
             //     //https://www.jenkins.io/doc/pipeline/steps/deploy/#deploy-deploy-warear-to-a-container
             //     jboss7(

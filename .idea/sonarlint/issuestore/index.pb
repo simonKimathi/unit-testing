@@ -9,3 +9,14 @@ Csrc/main/java/io/jotech/classicmodels/repository/JpaRepository.java,e\a\ea8dc6
 Lsrc/main/java/io/jotech/classicmodels/repository/impl/JpaRepositoryImpl.java,e\1\e1992d07bbc172ee5ee0c70cd1a60cf9351ff43a
 d
 4src/test/java/classicmodels/it/rest/OfficesTest.java,c\1\c12f8c7062450665bd614af6dcc956a0c606629d
+7
+pom.xml,4\4\442292b8a7efeabbe4cc176709b833b1792140ec
+:
+
+.gitignore,a\5\a5cc2925ca8258af241be7e5b0381edf30266302
+e
+5src/main/java/io/jotech/classicmodels/Calculator.java,b\4\b4557457d401161cf2a1aaeda6445b8fe9751af0
+i
+9src/test/java/io/jotech/classicmodels/CalculatorTest.java,0\b\0badb99da4be2366f888f070dc12c5944a287488
+h
+8src/test/java/classicmodels/util/ArquillianWarUtils.java,6\d\6d10b1cfd9af4db4055d960509a49a8451bee9cd
